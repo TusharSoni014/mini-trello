@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,14 +8,15 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import axios from "axios";
+import { toast } from "sonner";
+import { showErrorToast } from "@/components/ui/show-error-toast";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -24,6 +25,7 @@ const formSchema = z.object({
 });
 
 export default function Page() {
+  const [loading, setLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -32,10 +34,19 @@ export default function Page() {
       password: "",
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setLoading(true);
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/user/signup`,
+        values
+      );
+      toast("Signup Success");
+    } catch (error) {
+      showErrorToast(error);
+    } finally {
+      setLoading(false);
+    }
   }
   return (
     <div className="w-full h-screen flex justify-center items-center bg-gradient-to-t from-violet-300 to-white">
@@ -98,13 +109,16 @@ export default function Page() {
                 </FormItem>
               )}
             />
-            <Button variant="purple-gradient" type="submit">
+            <Button loading={loading} variant="purple-gradient" type="submit">
               Sign Up
             </Button>
           </form>
         </Form>
-        <div className="w-full text-black/60 text-sm mt-3 flex justify-center items-center gap-1.5">
-          Already have an account? <Link className="text-blue-500 hover:underline" href="/login">Log in.</Link>
+        <div className="w-full text-black/60 text-xs mt-3 flex justify-center items-center gap-1.5">
+          Already have an account?
+          <Link className="text-blue-500 hover:underline" href="/login">
+            Log in.
+          </Link>
         </div>
       </div>
     </div>
