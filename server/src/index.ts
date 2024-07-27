@@ -17,6 +17,7 @@ app.use(
 config();
 
 app.use("/user", userRouter);
+app.use("/task", userRouter);
 
 dbConnect();
 app.listen(4000, () => {

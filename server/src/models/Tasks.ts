@@ -7,6 +7,7 @@ interface ITaskSchema {
   priority?: "Low" | "Medium" | "Urgent";
   deadline?: Date;
   user: mongoose.Types.ObjectId;
+  isDeleted: boolean;
 }
 
 const TaskSchema = new mongoose.Schema<ITaskSchema>(
@@ -36,6 +37,10 @@ const TaskSchema = new mongoose.Schema<ITaskSchema>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
