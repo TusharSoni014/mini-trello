@@ -18,6 +18,8 @@ import axios from "axios";
 import { toast } from "sonner";
 import { showErrorToast } from "@/components/ui/show-error-toast";
 
+axios.defaults.withCredentials = true;
+
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(5),
@@ -35,11 +37,12 @@ export default function Page() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setLoading(true);
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/user/signup`,
-        values
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/user/login`,
+        { userId: values.email, password: values.password }
       );
-      toast("Signup Success");
+      console.log(response.data);
+      toast("Login Success");
     } catch (error) {
       showErrorToast(error);
     } finally {
