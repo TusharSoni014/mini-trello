@@ -1,8 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
+import appSlice from './slices/app.slice'
 
 export const makeStore = () => {
   return configureStore({
-    reducer: {},
+    reducer: {
+      appSlice
+    },
   })
 }
 

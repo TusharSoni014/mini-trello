@@ -17,6 +17,9 @@ import Link from "next/link";
 import axios from "axios";
 import { toast } from "sonner";
 import { showErrorToast } from "@/components/ui/show-error-toast";
+import { useAppDispatch } from "@/lib/hooks";
+import { updateCurrentUser } from "@/lib/slices/app.slice";
+import { useRouter } from "next/navigation";
 
 axios.defaults.withCredentials = true;
 
@@ -27,6 +30,8 @@ const formSchema = z.object({
 
 export default function Page() {
   const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,7 +46,8 @@ export default function Page() {
         `${process.env.NEXT_PUBLIC_SERVER_URL}/user/login`,
         { userId: values.email, password: values.password }
       );
-      console.log(response.data);
+      dispatch(updateCurrentUser(response.data));
+      router.push("/dashboard")
       toast("Login Success");
     } catch (error) {
       showErrorToast(error);

@@ -95,7 +95,6 @@ export const login = async (req: Request, res: Response) => {
       username: existingUser.username,
       picture: existingUser.picture,
       email: existingUser.email,
-      tasks: existingUser.tasks,
     });
   } catch (error) {
     return res.status(500).send({ message: "Error log in!", error: error });
@@ -136,7 +135,6 @@ export const userDetails = async (req: AuthRequest, res: Response) => {
       username: user.username,
       picture: user.picture,
       email: user.email,
-      tasks: user.tasks,
     });
   } catch (error) {
     return res.status(500).send({ message: "Cannot fetch user details" });
