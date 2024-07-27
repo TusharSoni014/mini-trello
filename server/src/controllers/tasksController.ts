@@ -3,6 +3,14 @@ import { AuthRequest } from "../middlewares/verifyToken";
 import { Task } from "../models/Tasks";
 import { User } from "../models/User";
 
+/**
+ * Creates a new task in the database.
+ *
+ * @param req - The authenticated request object, containing the task data in the request body.
+ * @param res - The response object, which will be used to send the created task back to the client.
+ * @returns A JSON response containing the created task.
+ * @throws {Error} If there is an error creating the task.
+ */
 export const createNote = async (req: AuthRequest, res: Response) => {
   try {
     const { title, description, status, priority, deadline } = req.body;
@@ -23,6 +31,14 @@ export const createNote = async (req: AuthRequest, res: Response) => {
   }
 };
 
+/**
+ * Updates an existing task in the database.
+ *
+ * @param req - The authenticated request object, containing the task ID in the request parameters and the updated task data in the request body.
+ * @param res - The response object, which will be used to send the updated task back to the client.
+ * @returns A JSON response containing the updated task.
+ * @throws {Error} If there is an error updating the task.
+ */
 export const editNote = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
@@ -41,6 +57,14 @@ export const editNote = async (req: AuthRequest, res: Response) => {
   }
 };
 
+/**
+ * Retrieves all notes for the authenticated user that have not been deleted.
+ *
+ * @param req - The authenticated request object, containing the user ID.
+ * @param res - The response object, which will be used to send the retrieved notes back to the client.
+ * @returns A JSON response containing an array of all notes for the authenticated user that have not been deleted.
+ * @throws {Error} If there is an error fetching the notes.
+ */
 export const getAllNotes = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req._id;
@@ -51,6 +75,14 @@ export const getAllNotes = async (req: AuthRequest, res: Response) => {
   }
 };
 
+/**
+ * Deletes an existing task from the database.
+ *
+ * @param req - The authenticated request object, containing the task ID in the request parameters.
+ * @param res - The response object, which will be used to send a success message back to the client.
+ * @returns A JSON response indicating that the task was deleted successfully.
+ * @throws {Error} If there is an error deleting the task.
+ */
 export const deleteNote = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;

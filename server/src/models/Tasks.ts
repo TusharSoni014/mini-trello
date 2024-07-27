@@ -10,6 +10,11 @@ interface ITaskSchema {
   isDeleted: boolean;
 }
 
+/**
+ * Defines the schema for a Task document in the MongoDB database.
+ * The schema includes fields for the task title, status, user, description, priority, deadline, and whether the task is deleted.
+ * The schema also includes timestamps for when the task was created and last updated.
+ */
 const TaskSchema = new mongoose.Schema<ITaskSchema>(
   {
     title: {
