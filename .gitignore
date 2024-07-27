@@ -4,15 +4,15 @@
 # dependencies
 **/node_modules
 **/.env
-/.pnp
-.pnp.js
+**/.pnp
+**/.pnp.js
 .yarn/install-state.gz
 
 # testing
 /coverage
 
 # next.js
-/.next/
+**/.next/
 /out/
 
 # production

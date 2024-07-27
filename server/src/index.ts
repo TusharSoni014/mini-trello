@@ -4,6 +4,7 @@ import { config } from "dotenv";
 import { dbConnect } from "./lib/dbConnect";
 import { userRouter } from "./routes/userRouter";
 import cookieParser from "cookie-parser";
+import { tasksRouter } from "./routes/tasksRouter";
 const app = express();
 
 app.use(express.json());
@@ -17,7 +18,7 @@ app.use(
 config();
 
 app.use("/user", userRouter);
-app.use("/task", userRouter);
+app.use("/task", tasksRouter);
 
 dbConnect();
 app.listen(4000, () => {
