@@ -5,6 +5,7 @@ import IntroIcon from "./icons/IntroIcon";
 import ShareIcon from "./icons/ShareIcon";
 import AccessIcon from "./icons/AccessIcon";
 import FunctionBar from "./FunctionBar";
+import TasksList from "./TasksList";
 
 export default function TaskManager({
   currentUser,
@@ -64,6 +65,7 @@ export default function TaskManager({
           </div>
         </div>
         <FunctionBar />
+        <TasksList />
       </div>
     </div>
   );

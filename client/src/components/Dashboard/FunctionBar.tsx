@@ -15,8 +15,8 @@ import { IoIosAddCircle } from "react-icons/io";
 export default function FunctionBar() {
   const dispatch = useAppDispatch();
   return (
-    <div className="w-full border border-red-500 flex justify-between items-center">
-      <div className="__search w-fit bg-white rounded-md flex justify-center items-center overflow-hidden">
+    <div className="w-full flex justify-between items-center">
+      <div className="__search w-fit bg-white rounded-md flex justify-center items-center overflow-hidden border">
         <Input
           className="focus-visible:ring-0 shadow-none border-none rounded-none w-[150px] pr-0"
           placeholder="Search"
