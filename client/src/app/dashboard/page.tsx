@@ -1,6 +1,7 @@
 "use client";
 
 import SideBar from "@/components/Dashboard/SideBar";
+import TaskManager from "@/components/Dashboard/TaskManager";
 import { useAuth } from "@/hooks/useAuth";
 import { useAppSelector } from "@/lib/hooks";
 import React, { useEffect } from "react";
@@ -25,8 +26,9 @@ export default function Page() {
     );
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen flex">
       <SideBar handleLogout={handleLogout} currentUser={currentUser} />
+      <TaskManager currentUser={currentUser} />
     </div>
   );
 }

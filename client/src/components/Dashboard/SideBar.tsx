@@ -6,7 +6,10 @@ import {
 } from "@/lib/slices/app.slice";
 import Image from "next/image";
 import { BsExclamationDiamond } from "react-icons/bs";
-import React from "react";
+import { MdOutlineDateRange } from "react-icons/md";
+import { GoPencil } from "react-icons/go";
+import { IoIosAdd } from "react-icons/io";
+import React, { useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -18,10 +21,11 @@ import { LuBellDot } from "react-icons/lu";
 import { FiLoader } from "react-icons/fi";
 import { LuChevronsRight } from "react-icons/lu";
 import { Button } from "../ui/button";
+import { format } from "date-fns";
 import { RxHome } from "react-icons/rx";
 import { CiStar, CiViewBoard } from "react-icons/ci";
 import { IoSettingsOutline, IoShareSocialOutline } from "react-icons/io5";
-import { BiGroup } from "react-icons/bi";
+import { BiGroup, BiLoader } from "react-icons/bi";
 import { FaChartLine } from "react-icons/fa6";
 import Link from "next/link";
 import { IoIosAddCircle } from "react-icons/io";
@@ -37,7 +41,22 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Input } from "../ui/input";
-import { ITaskSlice, updateStatus } from "@/lib/slices/task.slice";
+import {
+  ITaskSlice,
+  updateDeadline,
+  updateDescription,
+  updatePriority,
+  updateStatus,
+  updateTitle,
+} from "@/lib/slices/task.slice";
+import { Separator } from "../ui/separator";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "../ui/calendar";
+import { toast } from "sonner";
+import axios from "axios";
+import { showErrorToast } from "../ui/show-error-toast";
+axios.defaults.withCredentials = true;
 
 export default function SideBar({
   currentUser,
@@ -46,13 +65,65 @@ export default function SideBar({
   currentUser: IAppSlice["currentUser"];
   handleLogout: () => Promise<void>;
 }) {
+  const [popoverOpen, setPopoverOpen] = React.useState(false);
+  const [createLoading, setCreateLoading] = React.useState(false);
   const { createTaskDrawerVisiblity } = useAppSelector(
     (state) => state.appSlice
   );
-  const {
-    createForm: { status },
-  } = useAppSelector((state) => state.taskSlice);
+  const { status, priority, title, deadline, description } = useAppSelector(
+    (state) => state.taskSlice.createForm
+  );
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const handleCreateNote = async () => {
+      if (title === "" || status === "") {
+        toast("Title and Status are required!");
+        return;
+      }
+      const taskData: ITaskSlice["createForm"] = {
+        title: title,
+        status: status,
+      };
+      if (deadline) taskData.deadline = deadline;
+      if (description) taskData.description = description;
+      if (priority) taskData.priority = priority;
+
+      setCreateLoading(true);
+
+      try {
+        axios.post(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/task/create`,
+          taskData
+        );
+        dispatch(updateCreateTaskDrawerVisibility(false));
+        toast("Task created successfully!");
+      } catch (error) {
+        showErrorToast(error);
+      } finally {
+        setCreateLoading(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter" && createTaskDrawerVisiblity) {
+        handleCreateNote();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    dispatch,
+    createTaskDrawerVisiblity,
+    title,
+    status,
+    deadline,
+    description,
+    priority,
+  ]);
+
   const menuItems: Array<{
     name: string;
     icon: React.ReactNode;
@@ -91,7 +162,7 @@ export default function SideBar({
     },
   ];
   return (
-    <div className="__left w-72 border px-4 h-full pt-6 pb-8 bg-white ">
+    <div className="__left w-60 border px-4 h-full pt-6 pb-8 bg-white ">
       <div className="w-full flex gap-3 justify-start items-center">
         <div className="relative w-8 h-8 rounded-lg overflow-hidden ">
           <Image fill={true} src={currentUser?.picture || ""} alt="" />
@@ -149,6 +220,16 @@ export default function SideBar({
           side="right"
           className="md:w-full !max-w-[500px] p-5 flex flex-col gap-7"
         >
+          <div
+            style={{
+              pointerEvents: createLoading ? "all" : "none",
+              opacity: createLoading ? "1" : "0",
+            }}
+            className="absolute transition left-0 top-0 p-5 bg-white/30 backdrop-blur-sm w-full h-full flex justify-center items-center gap-3"
+          >
+            Creating
+            <BiLoader className="animate-spin" />
+          </div>
           <SheetHeader>
             <SheetTitle className="flex justify-between items-center">
               <div className="flex gap-3 justify-center items-center ">
@@ -179,8 +260,10 @@ export default function SideBar({
             <Input
               placeholder="Title"
               className="w-full text-4xl rounded-none focus-visible:ring-0 outline-none placeholder:text-black/30 font-semibold h-14 shadow-none border-none pl-0"
+              value={title}
+              onChange={(e) => dispatch(updateTitle(e.target.value))}
             />
-            <div className="__options mt-4">
+            <div className="__options mt-4 flex flex-col gap-2.5">
               <div className="flex">
                 <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
                   <FiLoader />
@@ -188,8 +271,10 @@ export default function SideBar({
                 </div>
                 <Select
                   value={status}
-                  onValueChange={(val: ITaskSlice["createForm"]["status"]) =>
-                    dispatch(updateStatus(val))
+                  onValueChange={(val) =>
+                    dispatch(
+                      updateStatus(val as ITaskSlice["createForm"]["status"])
+                    )
                   }
                 >
                   <SelectTrigger
@@ -209,31 +294,94 @@ export default function SideBar({
               </div>
               <div className="flex">
                 <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
-                <BsExclamationDiamond />
+                  <BsExclamationDiamond />
                   <p className="text-sm">Priority</p>
                 </div>
                 <Select
-                  value={status}
-                  onValueChange={(val: ITaskSlice["createForm"]["status"]) =>
-                    dispatch(updateStatus(val))
+                  value={priority}
+                  onValueChange={(val) =>
+                    dispatch(
+                      updatePriority(
+                        val as ITaskSlice["createForm"]["priority"]
+                      )
+                    )
                   }
                 >
                   <SelectTrigger
                     className={`w-full shadow-none border-none focus:ring-0 text-black/40 ${
-                      status && "text-black"
+                      priority && "text-black"
                     }`}
                   >
                     <SelectValue placeholder="Not selected" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todo">To-Do</SelectItem>
-                    <SelectItem value="under-review">Under Review</SelectItem>
-                    <SelectItem value="in-progress">In Progress</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex">
+                <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
+                  <MdOutlineDateRange />
+                  <p className="text-sm">Deadline</p>
+                </div>
+                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start text-left font-normal text-sm text-black px-3 hover:bg-transparent",
+                        !deadline && "text-black/40 hover:text-black/30"
+                      )}
+                    >
+                      {deadline ? (
+                        format(deadline, "PPP")
+                      ) : (
+                        <span>Not selected</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={deadline ? new Date(deadline) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          dispatch(updateDeadline(date.toISOString()));
+                          setPopoverOpen(false);
+                        }
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="flex">
+                <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
+                  <GoPencil />
+                  <p className="text-sm">Description</p>
+                </div>
+                <Input
+                  value={description}
+                  onChange={(e) => dispatch(updateDescription(e.target.value))}
+                  className="shadow-none border-none focus-visible:ring-0 placeholder:text-black/40"
+                  placeholder="Not selected"
+                />
+              </div>
             </div>
+            <div className="mt-5 flex w-fit justify-center items-center gap-5">
+              <IoIosAdd />
+              <Button
+                variant="link"
+                className="w-fit h-fit p-0 rounded-none hover:no-underline"
+              >
+                Add Custom Property
+              </Button>
+            </div>
+            <Separator className="my-5" />
+            <p className="text-black/30 text-xs">
+              Start writing, or drag your own files here.
+            </p>
           </div>
         </SheetContent>
       </Sheet>
