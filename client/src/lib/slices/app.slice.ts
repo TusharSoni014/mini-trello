@@ -7,10 +7,12 @@ export interface IAppSlice {
     email: string;
     tasks: number;
   };
+  createTaskDrawerVisiblity: boolean;
 }
 
 const initialState: IAppSlice = {
   currentUser: null,
+  createTaskDrawerVisiblity: false,
 };
 
 const appSlice = createSlice({
@@ -20,8 +22,15 @@ const appSlice = createSlice({
     updateCurrentUser(state, action: PayloadAction<IAppSlice["currentUser"]>) {
       state.currentUser = action.payload;
     },
+    updateCreateTaskDrawerVisibility(
+      state,
+      action: PayloadAction<IAppSlice["createTaskDrawerVisiblity"]>
+    ) {
+      state.createTaskDrawerVisiblity = action.payload;
+    },
   },
 });
 
-export const { updateCurrentUser } = appSlice.actions;
+export const { updateCurrentUser, updateCreateTaskDrawerVisibility } =
+  appSlice.actions;
 export default appSlice.reducer;
