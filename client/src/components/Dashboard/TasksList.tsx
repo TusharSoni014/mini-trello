@@ -11,12 +11,12 @@ import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 
 export interface IColumn {
-  id: string | number;
+  id: string;
   title: string;
 }
 
 export interface ITask {
-  id: string | number;
+  id: string;
   columnId: string;
   content: string;
 }
