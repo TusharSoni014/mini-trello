@@ -1,13 +1,21 @@
-import React from "react";
-import { IColumn } from "./TasksList";
-import { useSortable } from "@dnd-kit/sortable";
+import React, { useMemo } from "react";
+import { IColumn, ITask } from "./TasksList";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "../ui/button";
 import { useAppDispatch } from "@/lib/hooks";
-import { updateCreateTaskDrawerVisibility } from "@/lib/slices/app.slice";
-import { ITaskSlice, updateStatus } from "@/lib/slices/task.slice";
+import TaskItem from "./TaskItem";
 
-export default function ColumnItem({ column }: { column: IColumn }) {
+export default function ColumnItem({
+  column,
+  createTask,
+  tasks,
+}: {
+  column: IColumn;
+  createTask: (columnId: string) => void;
+  tasks: Array<ITask>;
+}) {
+  const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
   const dispatch = useAppDispatch();
   const {
     setNodeRef,
@@ -42,20 +50,28 @@ export default function ColumnItem({ column }: { column: IColumn }) {
     <div
       ref={setNodeRef}
       style={style}
-      className=" w-full h-56 overflow-auto bg-white p-3 border"
+      className=" w-full h-full overflow-auto bg-white p-3 border flex flex-col"
     >
       <div {...attributes} {...listeners} className="border text-black/40">
         {column.title}
       </div>
+      <div className="flex-grow border border-red-500 overflow-scroll">
+        <SortableContext items={tasksIds}>
+          {tasks.map((task, index) => (
+            <TaskItem key={index} task={task} />
+          ))}
+        </SortableContext>
+      </div>
       <div className="">
         <Button
-          onClick={() => {
-            dispatch(
-              updateStatus(column.id as ITaskSlice["createForm"]["status"])
-            );
-            dispatch(updateCreateTaskDrawerVisibility(true));
-          }}
-          className="w-full my-3"
+          // onClick={() => {
+          //   dispatch(
+          //     updateStatus(column.id as ITaskSlice["createForm"]["status"])
+          //   );
+          //   dispatch(updateCreateTaskDrawerVisibility(true));
+          // }}
+          onClick={() => createTask(column.id)}
+          className="w-full mt-3"
         >
           + Add Task
         </Button>

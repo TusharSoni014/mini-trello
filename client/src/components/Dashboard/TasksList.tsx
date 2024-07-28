@@ -52,6 +52,15 @@ export default function TasksList() {
     }
   };
 
+  const createTask = (columnId: string) => {
+    const newTask = {
+      id: Math.random().toFixed(2).toString(),
+      columnId: columnId,
+      content: `lorem ipsum ${Math.random().toFixed(2).toString()}`,
+    };
+    setTasks([...tasks, newTask]);
+  };
+
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -75,16 +84,27 @@ export default function TasksList() {
   return (
     <div className="flex flex-col h-[calc(100vh-270px)] bg-white rounded-md">
       <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-        <div className="flex gap-3 p-3">
+        <div className="flex gap-3 p-3 h-full">
           <SortableContext items={columnsId}>
             {columns.map((column) => (
-              <ColumnItem key={column.id} column={column} />
+              <ColumnItem
+                createTask={createTask}
+                key={column.id}
+                column={column}
+                tasks={tasks.filter((task) => task.columnId === column.id)}
+              />
             ))}
           </SortableContext>
         </div>
         {createPortal(
           <DragOverlay>
-            {activeColumn && <ColumnItem column={activeColumn} />}
+            {activeColumn && (
+              <ColumnItem
+                createTask={createTask}
+                column={activeColumn}
+                tasks={tasks}
+              />
+            )}
           </DragOverlay>,
           document.body
         )}
