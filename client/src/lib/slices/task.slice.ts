@@ -30,6 +30,32 @@ export const fetchMyTasksThunk = createAsyncThunk<
   return response.data;
 });
 
+export const updateTaskPositionThunk = createAsyncThunk(
+  "task/updatePosition",
+  async (
+    {
+      taskId,
+      newColumnId,
+      newIndex,
+    }: { taskId: string; newColumnId: string; newIndex: number },
+    { dispatch }
+  ) => {
+    // try {
+    //   await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/task/updatePosition`, {
+    //     taskId,
+    //     newColumnId,
+    //     newIndex
+    //   });
+    //   // Optionally refetch tasks to ensure sync with backend
+    //   dispatch(fetchMyTasksThunk());
+    // } catch (error) {
+    //   toast('Error updating task position');
+    //   throw error;
+    // }
+    console.log(taskId, newColumnId, newIndex);
+  }
+);
+
 const initialState: ITaskSlice = {
   createForm: {
     status: "",
@@ -81,6 +107,34 @@ const taskSlice = createSlice({
     ) => {
       state.createForm.deadline = action.payload;
     },
+    updateTaskPosition: (
+      state,
+      action: PayloadAction<{
+        taskId: string;
+        newColumnId: ITaskSlice["createForm"]["status"];
+        newIndex: number;
+      }>
+    ) => {
+      const { taskId, newColumnId, newIndex } = action.payload;
+      const allTasks = Object.values(state.myTasks).flat();
+      const taskToMove = allTasks.find((t) => t._id === taskId);
+
+      if (taskToMove && newColumnId !== "") {
+        // Remove task from its current column
+        const oldColumnId = taskToMove.status;
+        if (oldColumnId !== "") {
+          state.myTasks[oldColumnId] = state.myTasks[oldColumnId].filter(
+            (t) => t._id !== taskId
+          );
+        }
+
+        // Update task status
+        taskToMove.status = newColumnId;
+
+        // Insert task at the new position in the correct column
+        state.myTasks[newColumnId].splice(newIndex, 0, taskToMove);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchMyTasksThunk.pending, (state) => {
@@ -109,5 +163,6 @@ export const {
   updateDescription,
   updatePriority,
   updateTitle,
+  updateTaskPosition,
 } = taskSlice.actions;
 export default taskSlice.reducer;
