@@ -41,7 +41,7 @@ export const signup = async (req: Request, res: Response) => {
         description: `This is a sample ${category} task.`,
         status: category,
         user: user._id,
-        priority: "Low",
+        priority: "low",
       });
     }
 
