@@ -97,14 +97,14 @@ export default function SideBar({
           `${process.env.NEXT_PUBLIC_SERVER_URL}/task/create`,
           taskData
         );
-        dispatch(updateCreateTaskDrawerVisibility(false));
-        dispatch(fetchMyTasksThunk());
+        await dispatch(fetchMyTasksThunk());
         dispatch(updateTitle(""));
         dispatch(updateDeadline(""));
         dispatch(updateDescription(""));
         dispatch(updatePriority(""));
         dispatch(updateStatus(""));
         toast("Task created successfully!");
+        dispatch(updateCreateTaskDrawerVisibility(false));
       } catch (error) {
         showErrorToast(error);
       } finally {

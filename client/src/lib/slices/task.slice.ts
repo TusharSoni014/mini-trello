@@ -7,6 +7,7 @@ export interface ITaskSlice {
   createForm: {
     _id?: string;
     updatedAt?: Date;
+    createdAt?: Date;
     title: string;
     status: "todo" | "under-review" | "in-progress" | "done" | "";
     deadline?: string | undefined;
@@ -49,7 +50,6 @@ export const updateTaskPositionThunk = createAsyncThunk(
       toast("Error updating task position");
       throw error;
     }
-    console.log(taskId, newColumnId);
   }
 );
 
