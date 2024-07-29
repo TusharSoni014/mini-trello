@@ -23,7 +23,7 @@ A full-stack Trello clone project built with Next.js, Express, and MongoDB.
 ### Installation
 
 1. Clone the repository:
-git clone https://github.com/your-username/crework-trello-clone.git
+`git clone https://github.com/your-username/crework-trello-clone.git`
 
 2. Install dependencies for both client and server:
 `cd client && npm install cd ../server && npm install`
@@ -50,8 +50,8 @@ The frontend is built using Next.js, a React framework that enables server-side 
 Key features:
 - Server-side rendering
 - API routes
-- CSS modules for styling
-- TypeScript for type checking
+- Tailwind CSS and Shadcn UI for styling
+- TypeScript as a language
 
 To start the frontend development server:
 `cd client npm run dev`
@@ -61,7 +61,7 @@ To start the frontend development server:
 The backend is built using Express.js, a minimal and flexible Node.js web application framework.
 
 Key features:
-- RESTful API design
+- RESTful API design with MVC Architecture
 - JWT authentication
 - Middleware for request processing
 
