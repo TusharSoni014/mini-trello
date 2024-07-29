@@ -11,6 +11,7 @@ import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskItem from "./TaskItem";
 
+
 export interface IColumn {
   id: string;
   title: string;
@@ -118,7 +119,7 @@ export default function TasksList() {
       });
     }
   };
-  
+
   return (
     <div className="flex flex-col h-[calc(100vh-270px)] bg-white rounded-md">
       <DndContext
