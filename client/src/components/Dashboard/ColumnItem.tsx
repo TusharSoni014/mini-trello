@@ -27,7 +27,7 @@ export default function ColumnItem({
   } = useSortable({
     id: column.id,
     data: {
-      type: "task",
+      type: "column",
       column,
     },
   });
@@ -40,6 +40,7 @@ export default function ColumnItem({
   if (isDragging)
     return (
       <div
+        ref={setNodeRef}
         style={style}
         className="border border-red-500 w-full h-56"
       ></div>
@@ -47,10 +48,11 @@ export default function ColumnItem({
 
   return (
     <div
+      ref={setNodeRef}
       style={style}
-      className=" w-full h-full overflow-y-auto bg-white p-3 border flex flex-col"
+      className=" w-full h-full overflow-auto bg-white p-3 border flex flex-col"
     >
-      <div className="border text-black/40">
+      <div {...attributes} {...listeners} className="border text-black/40">
         {column.title}
       </div>
       <div className="flex-grow border border-red-500 overflow-scroll">
