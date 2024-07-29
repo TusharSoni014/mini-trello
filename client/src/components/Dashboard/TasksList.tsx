@@ -60,21 +60,6 @@ export default function TasksList() {
     }
   };
 
-  // const onDragEnd = (event: DragEndEvent) => {
-  //   setActiveTask(null);
-  //   const { active, over } = event;
-  //   if (!over) return;
-
-  //   const taskId = active.id as string;
-  //   const newColumnId = over.id as ITaskSlice["createForm"]["status"];
-  //   const newIndex = 0; // Or calculate the correct index
-
-  //   if (["todo", "under-review", "in-progress", "done"].includes(newColumnId)) {
-  //     dispatch(updateTaskPosition({ taskId, newColumnId, newIndex }));
-  //     dispatch(updateTaskPositionThunk({ taskId, newColumnId, newIndex }));
-  //   }
-  // };
-
   const onDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
     const { active, over } = event;
@@ -98,40 +83,6 @@ export default function TasksList() {
       dispatch(updateTaskPositionThunk({ taskId, newColumnId }));
     }
   };
-
-  // const onDragOver = (event: DragOverEvent) => {
-  //   const { active, over } = event;
-  //   if (!over) return;
-
-  //   const activeId = active.id;
-  //   const overId = over.id;
-
-  //   if (activeId === overId) {
-  //     return;
-  //   }
-  //   const isActiveATask = active.data.current?.type === "task";
-  //   const isOverATask = over.data.current?.type === "task";
-
-  //   if (!isActiveATask) {
-  //     return;
-  //   }
-  //   if (isActiveATask && isOverATask) {
-  //     setTasks((tasks) => {
-  //       const activeIndex = tasks.findIndex((t) => t.id === activeId);
-  //       const overIndex = tasks.findIndex((t) => t.id === overId);
-  //       tasks[activeIndex].columnId = tasks[overIndex].columnId;
-  //       return arrayMove(tasks, activeIndex, overIndex);
-  //     });
-  //   }
-  //   const isOverAColumn = over.data.current?.type === "column";
-  //   if (isActiveATask && isOverAColumn) {
-  //     setTasks((tasks) => {
-  //       const activeIndex = tasks.findIndex((t) => t.id === activeId);
-  //       tasks[activeIndex].columnId = overId.toString();
-  //       return arrayMove(tasks, activeIndex, activeIndex);
-  //     });
-  //   }
-  // };
 
   const onDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
@@ -184,7 +135,7 @@ export default function TasksList() {
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
       >
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-3 p-3 h-full">
+        <div className="flex gap-3 p-3 h-full">
           <SortableContext items={columnsId}>
             {columns.map((column) => (
               <ColumnItem
