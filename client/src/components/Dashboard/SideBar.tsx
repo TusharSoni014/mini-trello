@@ -4,6 +4,7 @@ import {
   IAppSlice,
   updateCreateTaskDrawerVisibility,
 } from "@/lib/slices/app.slice";
+import { LiaDownloadSolid } from "react-icons/lia";
 import Image from "next/image";
 import { BsExclamationDiamond } from "react-icons/bs";
 import { MdOutlineDateRange } from "react-icons/md";
@@ -200,229 +201,253 @@ export default function SideBar({
     },
   ];
   return (
-    <div className="__left w-60 border px-4 h-full pt-6 pb-8 bg-white ">
-      <div className="w-full flex gap-3 justify-start items-center">
-        <div className="relative w-8 h-8 rounded-lg overflow-hidden ">
-          <Image fill={true} src={currentUser?.picture || ""} alt="" />
+    <div className="__left w-72 border px-4 h-full pt-6 pb-8 bg-white flex flex-col justify-between">
+      <div className="">
+        <div className="w-full flex gap-3 justify-start items-center">
+          <div className="relative w-8 h-8 rounded-lg overflow-hidden ">
+            <Image fill={true} src={currentUser?.picture || ""} alt="" />
+          </div>
+          <p className="capitalize font-bold">{currentUser?.username}</p>
         </div>
-        <p className="capitalize font-bold">{currentUser?.username}</p>
-      </div>
-      <div className="w-full  py-2 flex justify-between items-center">
-        <div className="flex gap-2">
-          <LuBellDot size={20} />
-          <FiLoader size={20} />
-          <LuChevronsRight size={20} />
-        </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          className="text-black/60"
-          onClick={handleLogout}
-        >
-          Logout
-        </Button>
-      </div>
-      <div className="py-2 w-full flex flex-col gap-0.5">
-        {menuItems.map((item, index) => {
-          return (
-            <Link key={index} href={item.href} className="w-full">
-              <Button
-                className={`flex w-full px-2 gap-2 justify-start border-transparent border hover:border-border ${
-                  item.active && "bg-black/5"
-                }`}
-                variant="ghost"
-              >
-                {item.icon}
-                <p>{item.name}</p>
-              </Button>
-            </Link>
-          );
-        })}
-      </div>
-      <Sheet
-        open={createTaskDrawerVisiblity}
-        onOpenChange={(state) =>
-          dispatch(updateCreateTaskDrawerVisibility(state))
-        }
-      >
-        <SheetTrigger asChild>
+        <div className="w-full  py-2 flex justify-between items-center">
+          <div className="flex gap-2">
+            <LuBellDot size={20} />
+            <FiLoader size={20} />
+            <LuChevronsRight size={20} />
+          </div>
           <Button
-            onClick={() => dispatch(updateCreateTaskDrawerVisibility(true))}
-            className="w-full gap-1"
-            variant="purple-gradient"
+            variant="secondary"
+            size="sm"
+            className="text-black/60"
+            onClick={handleLogout}
           >
-            Create new task <IoIosAddCircle />
+            Logout
           </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="right"
-          className="md:w-full !max-w-[500px] p-5 flex flex-col gap-7"
-        >
-          <div
-            style={{
-              pointerEvents: createLoading ? "all" : "none",
-              opacity: createLoading ? "1" : "0",
-            }}
-            className="absolute transition left-0 top-0 p-5 bg-white/30 backdrop-blur-sm w-full h-full flex justify-center items-center gap-3"
-          >
-            Creating
-            <BiLoader className="animate-spin" />
-          </div>
-          <SheetHeader>
-            <SheetTitle className="flex justify-between items-center">
-              <div className="flex gap-3 justify-center items-center ">
-                <SheetClose className="cursor-pointer" asChild>
-                  <IoCloseSharp />
-                </SheetClose>
+        </div>
+        <div className="py-2 w-full flex flex-col gap-0.5">
+          {menuItems.map((item, index) => {
+            return (
+              <Link key={index} href={item.href} className="w-full">
                 <Button
+                  className={`flex w-full px-2 gap-2 justify-start border-transparent border hover:border-border ${
+                    item.active && "bg-black/5"
+                  }`}
                   variant="ghost"
-                  size="icon"
-                  className="p-1 h-full px-0 w-fit hover:bg-transparent"
                 >
-                  <LuMaximize2 />
+                  {item.icon}
+                  <p>{item.name}</p>
                 </Button>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="secondary" size="sm" className="text-black/60">
-                  Share
-                  <IoShareSocialOutline size={18} />
-                </Button>
-                <Button variant="secondary" size="sm" className="text-black/60">
-                  Favorite
-                  <CiStar size={18} />
-                </Button>
-              </div>
-            </SheetTitle>
-          </SheetHeader>
-          <div className="w-full">
-            <Input
-              placeholder="Title"
-              className="w-full text-4xl rounded-none focus-visible:ring-0 outline-none placeholder:text-black/30 font-semibold h-14 shadow-none border-none pl-0"
-              value={title}
-              onChange={(e) => dispatch(updateTitle(e.target.value))}
-            />
-            <div className="__options mt-4 flex flex-col gap-2.5">
-              <div className="flex">
-                <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
-                  <FiLoader />
-                  <p className="text-sm">Status</p>
-                </div>
-                <Select
-                  value={status}
-                  onValueChange={(val) =>
-                    dispatch(
-                      updateStatus(val as ITaskSlice["createForm"]["status"])
-                    )
-                  }
-                >
-                  <SelectTrigger
-                    className={`w-full shadow-none border-none focus:ring-0 text-black/40 ${
-                      status && "text-black"
-                    }`}
+              </Link>
+            );
+          })}
+        </div>
+        <Sheet
+          open={createTaskDrawerVisiblity}
+          onOpenChange={(state) =>
+            dispatch(updateCreateTaskDrawerVisibility(state))
+          }
+        >
+          <SheetTrigger asChild>
+            <Button
+              onClick={() => dispatch(updateCreateTaskDrawerVisibility(true))}
+              className="w-full gap-1"
+              variant="purple-gradient"
+            >
+              Create new task <IoIosAddCircle />
+            </Button>
+          </SheetTrigger>
+          <SheetContent
+            side="right"
+            className="md:w-full !max-w-[500px] p-5 flex flex-col gap-7"
+          >
+            <div
+              style={{
+                pointerEvents: createLoading ? "all" : "none",
+                opacity: createLoading ? "1" : "0",
+              }}
+              className="absolute transition left-0 top-0 p-5 bg-white/30 backdrop-blur-sm w-full h-full flex justify-center items-center gap-3"
+            >
+              Creating
+              <BiLoader className="animate-spin" />
+            </div>
+            <SheetHeader>
+              <SheetTitle className="flex justify-between items-center">
+                <div className="flex gap-3 justify-center items-center ">
+                  <SheetClose className="cursor-pointer" asChild>
+                    <IoCloseSharp />
+                  </SheetClose>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-1 h-full px-0 w-fit hover:bg-transparent"
                   >
-                    <SelectValue placeholder="Not selected" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todo">To-Do</SelectItem>
-                    <SelectItem value="under-review">Under Review</SelectItem>
-                    <SelectItem value="in-progress">In Progress</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex">
-                <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
-                  <BsExclamationDiamond />
-                  <p className="text-sm">Priority</p>
+                    <LuMaximize2 />
+                  </Button>
                 </div>
-                <Select
-                  value={priority}
-                  onValueChange={(val) =>
-                    dispatch(
-                      updatePriority(
-                        val as ITaskSlice["createForm"]["priority"]
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="text-black/60"
+                  >
+                    Share
+                    <IoShareSocialOutline size={18} />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="text-black/60"
+                  >
+                    Favorite
+                    <CiStar size={18} />
+                  </Button>
+                </div>
+              </SheetTitle>
+            </SheetHeader>
+            <div className="w-full">
+              <Input
+                placeholder="Title"
+                className="w-full text-4xl rounded-none focus-visible:ring-0 outline-none placeholder:text-black/30 font-semibold h-14 shadow-none border-none pl-0"
+                value={title}
+                onChange={(e) => dispatch(updateTitle(e.target.value))}
+              />
+              <div className="__options mt-4 flex flex-col gap-2.5">
+                <div className="flex">
+                  <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
+                    <FiLoader />
+                    <p className="text-sm">Status</p>
+                  </div>
+                  <Select
+                    value={status}
+                    onValueChange={(val) =>
+                      dispatch(
+                        updateStatus(val as ITaskSlice["createForm"]["status"])
                       )
-                    )
-                  }
-                >
-                  <SelectTrigger
-                    className={`w-full shadow-none border-none focus:ring-0 text-black/40 ${
-                      priority && "text-black"
-                    }`}
+                    }
                   >
-                    <SelectValue placeholder="Not selected" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex">
-                <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
-                  <MdOutlineDateRange />
-                  <p className="text-sm">Deadline</p>
-                </div>
-                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className={cn(
-                        "w-full justify-start text-left font-normal text-sm text-black px-3 hover:bg-transparent",
-                        !deadline && "text-black/40 hover:text-black/30"
-                      )}
+                    <SelectTrigger
+                      className={`w-full shadow-none border-none focus:ring-0 text-black/40 ${
+                        status && "text-black"
+                      }`}
                     >
-                      {deadline ? (
-                        format(deadline, "PPP")
-                      ) : (
-                        <span>Not selected</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={deadline ? new Date(deadline) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          dispatch(updateDeadline(date.toISOString()));
-                          setPopoverOpen(false);
-                        }
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <div className="flex">
-                <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
-                  <GoPencil />
-                  <p className="text-sm">Description</p>
+                      <SelectValue placeholder="Not selected" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todo">To-Do</SelectItem>
+                      <SelectItem value="under-review">Under Review</SelectItem>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                      <SelectItem value="done">Done</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <Input
-                  value={description}
-                  onChange={(e) => dispatch(updateDescription(e.target.value))}
-                  className="shadow-none border-none focus-visible:ring-0 placeholder:text-black/40"
-                  placeholder="Not selected"
-                />
+                <div className="flex">
+                  <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
+                    <BsExclamationDiamond />
+                    <p className="text-sm">Priority</p>
+                  </div>
+                  <Select
+                    value={priority}
+                    onValueChange={(val) =>
+                      dispatch(
+                        updatePriority(
+                          val as ITaskSlice["createForm"]["priority"]
+                        )
+                      )
+                    }
+                  >
+                    <SelectTrigger
+                      className={`w-full shadow-none border-none focus:ring-0 text-black/40 ${
+                        priority && "text-black"
+                      }`}
+                    >
+                      <SelectValue placeholder="Not selected" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex">
+                  <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
+                    <MdOutlineDateRange />
+                    <p className="text-sm">Deadline</p>
+                  </div>
+                  <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className={cn(
+                          "w-full justify-start text-left font-normal text-sm text-black px-3 hover:bg-transparent",
+                          !deadline && "text-black/40 hover:text-black/30"
+                        )}
+                      >
+                        {deadline ? (
+                          format(deadline, "PPP")
+                        ) : (
+                          <span>Not selected</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={deadline ? new Date(deadline) : undefined}
+                        onSelect={(date) => {
+                          if (date) {
+                            dispatch(updateDeadline(date.toISOString()));
+                            setPopoverOpen(false);
+                          }
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="flex">
+                  <div className="flex gap-5 items-center text-black/60 w-[200px] justify-start">
+                    <GoPencil />
+                    <p className="text-sm">Description</p>
+                  </div>
+                  <Input
+                    value={description}
+                    onChange={(e) =>
+                      dispatch(updateDescription(e.target.value))
+                    }
+                    className="shadow-none border-none focus-visible:ring-0 placeholder:text-black/40"
+                    placeholder="Not selected"
+                  />
+                </div>
               </div>
+              <div className="mt-5 flex w-fit justify-center items-center gap-5">
+                <IoIosAdd />
+                <Button
+                  variant="link"
+                  className="w-fit h-fit p-0 rounded-none hover:no-underline"
+                >
+                  Add Custom Property
+                </Button>
+              </div>
+              <Separator className="my-5" />
+              <p className="text-black/30 text-xs">
+                Start writing, or drag your own files here.
+              </p>
+              <p className="text-black/30 text-xs">
+                Press Enter to save this task!
+              </p>
             </div>
-            <div className="mt-5 flex w-fit justify-center items-center gap-5">
-              <IoIosAdd />
-              <Button
-                variant="link"
-                className="w-fit h-fit p-0 rounded-none hover:no-underline"
-              >
-                Add Custom Property
-              </Button>
-            </div>
-            <Separator className="my-5" />
-            <p className="text-black/30 text-xs">
-              Start writing, or drag your own files here.
-            </p>
-          </div>
-        </SheetContent>
-      </Sheet>
+          </SheetContent>
+        </Sheet>
+      </div>
+      <div className=" p-2.5 rounded-md bg-black/5 text-black/70 flex gap-2.5 cursor-pointer select-none">
+        <div className="h-full flex justify-center items-center">
+          <LiaDownloadSolid size={30} />
+        </div>
+        <div className="flex flex-col gap-0">
+          Download the app
+          <p className="text-xs text-black/40">Get the full experience </p>
+        </div>
+      </div>
     </div>
   );
 }
