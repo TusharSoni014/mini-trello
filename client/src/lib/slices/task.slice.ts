@@ -33,11 +33,7 @@ export const fetchMyTasksThunk = createAsyncThunk<
 export const updateTaskPositionThunk = createAsyncThunk(
   "task/updatePosition",
   async (
-    {
-      taskId,
-      newColumnId,
-      newIndex,
-    }: { taskId: string; newColumnId: string; newIndex: number },
+    { taskId, newColumnId }: { taskId: string; newColumnId: string },
     { dispatch }
   ) => {
     // try {
@@ -52,7 +48,7 @@ export const updateTaskPositionThunk = createAsyncThunk(
     //   toast('Error updating task position');
     //   throw error;
     // }
-    console.log(taskId, newColumnId, newIndex);
+    console.log(taskId, newColumnId);
   }
 );
 

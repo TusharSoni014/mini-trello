@@ -55,10 +55,8 @@ export default function TasksList() {
   const dispatch = useAppDispatch();
 
   const onDragStart = (event: DragStartEvent) => {
-    console.log(event.active.data.current?.type);
     if (event.active.data.current?.type === "task") {
       setActiveTask(event.active.data.current.task);
-      return;
     }
   };
 
@@ -67,36 +65,39 @@ export default function TasksList() {
   //   const { active, over } = event;
   //   if (!over) return;
 
-  //   const activeColumnId = active.id;
-  //   const overColumnId = over.id;
+  //   const taskId = active.id as string;
+  //   const newColumnId = over.id as ITaskSlice["createForm"]["status"];
+  //   const newIndex = 0; // Or calculate the correct index
 
-  //   if (activeColumnId === overColumnId) return;
-
-  //   setColumns((columns) => {
-  //     const activeColumnIndex = columns.findIndex(
-  //       (col) => col.id === activeColumnId
-  //     );
-  //     const overColumnIndex = columns.findIndex(
-  //       (col) => col.id === overColumnId
-  //     );
-  //     return arrayMove(columns, activeColumnIndex, overColumnIndex);
-  //   });
+  //   if (["todo", "under-review", "in-progress", "done"].includes(newColumnId)) {
+  //     dispatch(updateTaskPosition({ taskId, newColumnId, newIndex }));
+  //     dispatch(updateTaskPositionThunk({ taskId, newColumnId, newIndex }));
+  //   }
   // };
 
-const onDragEnd = (event: DragEndEvent) => {
-  setActiveTask(null);
-  const { active, over } = event;
-  if (!over) return;
+  const onDragEnd = (event: DragEndEvent) => {
+    setActiveTask(null);
+    const { active, over } = event;
+    if (!over) return;
 
-  const taskId = active.id as string;
-  const newColumnId = over.id as ITaskSlice["createForm"]["status"];
-  const newIndex = 0; // Or calculate the correct index
+    const taskId = active.id as string;
+    let newColumnId: ITaskSlice["createForm"]["status"];
+    let newIndex: number;
 
-  if (["todo", "under-review", "in-progress", "done"].includes(newColumnId)) {
-    dispatch(updateTaskPosition({ taskId, newColumnId, newIndex }));
-    dispatch(updateTaskPositionThunk({ taskId, newColumnId, newIndex }));
-  }
-};
+    if (over.data.current?.type === "column") {
+      newColumnId = over.id as ITaskSlice["createForm"]["status"];
+      newIndex = columns.findIndex((col) => col.id === newColumnId);
+    } else {
+      const overTask = over.data.current?.task as ITaskSlice["createForm"];
+      newColumnId = overTask.status;
+      newIndex = tasks.findIndex((task) => task.id === over.id);
+    }
+
+    if (["todo", "under-review", "in-progress", "done"].includes(newColumnId)) {
+      dispatch(updateTaskPosition({ taskId, newColumnId, newIndex }));
+      dispatch(updateTaskPositionThunk({ taskId, newColumnId }));
+    }
+  };
 
   // const onDragOver = (event: DragOverEvent) => {
   //   const { active, over } = event;
