@@ -85,40 +85,6 @@ export default function TasksList() {
     });
   };
 
-  // const onDragOver = (event: DragOverEvent) => {
-  //   const { active, over } = event;
-  //   if (!over) return;
-
-  //   const activeId = active.id;
-  //   const overId = over.id;
-
-  //   if (activeId === overId) {
-  //     return;
-  //   }
-  //   const isActiveATask = active.data.current?.type === "task";
-  //   const isOverATask = over.data.current?.type === "task";
-
-  //   if (!isActiveATask) {
-  //     return;
-  //   }
-  //   if (isActiveATask && isOverATask) {
-  //     setTasks((tasks) => {
-  //       const activeIndex = tasks.findIndex((t) => t.id === activeId);
-  //       const overIndex = tasks.findIndex((t) => t.id === overId);
-  //       tasks[activeIndex].columnId = tasks[overIndex].columnId;
-  //       return arrayMove(tasks, activeIndex, overIndex);
-  //     });
-  //   }
-  //   const isOverAColumn = over.data.current?.type === "column";
-  //   if (isActiveATask && isOverAColumn) {
-  //     setTasks((tasks) => {
-  //       const activeIndex = tasks.findIndex((t) => t.id === activeId);
-  //       tasks[activeIndex].columnId = overId.toString();
-  //       return arrayMove(tasks, activeIndex, activeIndex);
-  //     });
-  //   }
-  // };
-
   const onDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -126,31 +92,33 @@ export default function TasksList() {
     const activeId = active.id;
     const overId = over.id;
 
-    if (activeId === overId) return;
-
+    if (activeId === overId) {
+      return;
+    }
     const isActiveATask = active.data.current?.type === "task";
-    const isOverAColumn = over.data.current?.type === "column";
     const isOverATask = over.data.current?.type === "task";
 
-    if (!isActiveATask) return;
-
-    setTasks((tasks) => {
-      const activeTask = tasks.find((t) => t.id === activeId);
-      if (!activeTask) return tasks;
-
-      if (isOverAColumn) {
-        activeTask.columnId = overId.toString();
-      } else if (isOverATask) {
-        const overTask = tasks.find((t) => t.id === overId);
-        if (overTask) {
-          activeTask.columnId = overTask.columnId;
-        }
-      }
-
-      return tasks.map((t) => (t.id === activeId ? activeTask : t));
-    });
+    if (!isActiveATask) {
+      return;
+    }
+    if (isActiveATask && isOverATask) {
+      setTasks((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
+        const overIndex = tasks.findIndex((t) => t.id === overId);
+        tasks[activeIndex].columnId = tasks[overIndex].columnId;
+        return arrayMove(tasks, activeIndex, overIndex);
+      });
+    }
+    const isOverAColumn = over.data.current?.type === "column";
+    if (isActiveATask && isOverAColumn) {
+      setTasks((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
+        tasks[activeIndex].columnId = overId.toString();
+        return arrayMove(tasks, activeIndex, activeIndex);
+      });
+    }
   };
-
+  
   return (
     <div className="flex flex-col h-[calc(100vh-270px)] bg-white rounded-md">
       <DndContext
