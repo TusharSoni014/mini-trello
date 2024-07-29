@@ -18,9 +18,13 @@ export default function ColumnItem({
   tasks: Array<ITask>;
 }) {
   const tasksRedux = useAppSelector((state) => state.taskSlice.myTasks);
-  const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
+  const tasksIds = useMemo(
+    () =>
+      tasksRedux[column.id as keyof typeof tasksRedux].map((task) => task._id).filter((id): id is string => id !== undefined),
+    [tasksRedux, column.id]
+  );
   const dispatch = useAppDispatch();
-  const { setNodeRef, transform, transition, isDragging } = useSortable({
+  const { setNodeRef, transform, transition } = useSortable({
     id: column.id,
     data: {
       type: "column",
@@ -32,15 +36,6 @@ export default function ColumnItem({
     transition,
     transform: CSS.Transform.toString(transform),
   };
-
-  if (isDragging)
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        className="border border-red-500 w-full h-56"
-      ></div>
-    );
 
   return (
     <div
@@ -71,7 +66,7 @@ export default function ColumnItem({
           }}
           className="w-full bg-gradient-to-t from-[#202020] to-[#3A3A3A] flex justify-between items-center px-2.5"
         >
-          Add Task <GoPlus size={20}/>
+          Add Task <GoPlus size={20} />
         </Button>
       </div>
     </div>

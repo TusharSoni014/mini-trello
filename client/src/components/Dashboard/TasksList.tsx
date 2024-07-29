@@ -184,7 +184,7 @@ export default function TasksList() {
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
       >
-        <div className="flex gap-3 p-3 h-full">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-3 p-3 h-full">
           <SortableContext items={columnsId}>
             {columns.map((column) => (
               <ColumnItem
