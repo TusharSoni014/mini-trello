@@ -1,14 +1,15 @@
 import React, { useMemo, useState } from "react";
-import { Button } from "../ui/button";
 import ColumnItem from "./ColumnItem";
 import {
   DndContext,
   DragEndEvent,
+  DragOverEvent,
   DragOverlay,
   DragStartEvent,
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
+import TaskItem from "./TaskItem";
 
 export interface IColumn {
   id: string;
@@ -41,13 +42,14 @@ export default function TasksList() {
     },
   ]);
   const [tasks, setTasks] = useState<Array<ITask>>([]);
+  const [activeTask, setActiveTask] = useState<ITask | null>(null);
   const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
   const onDragStart = (event: DragStartEvent) => {
-    console.log(event);
+    console.log(event.active.data.current?.type);
     if (event.active.data.current?.type === "task") {
-      setActiveColumn(event.active.data.current.column);
+      setActiveTask(event.active.data.current.task);
       return;
     }
   };
@@ -62,6 +64,8 @@ export default function TasksList() {
   };
 
   const onDragEnd = (event: DragEndEvent) => {
+    setActiveColumn(null);
+    setActiveTask(null);
     const { active, over } = event;
     if (!over) return;
 
@@ -81,9 +85,35 @@ export default function TasksList() {
     });
   };
 
+  const onDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+
+    if (activeId === overId) {
+      return;
+    }
+    const isActiveATask = active.data.current?.type === "Task";
+    const isOverATask = over.data.current?.type === "Task";
+    if (isActiveATask && isOverATask) {
+      setTasks((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
+        const overIndex = tasks.findIndex((t) => t.id === overId);
+
+        return arrayMove(tasks, activeIndex, overIndex);
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-270px)] bg-white rounded-md">
-      <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+      <DndContext
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onDragOver={onDragOver}
+      >
         <div className="flex gap-3 p-3 h-full">
           <SortableContext items={columnsId}>
             {columns.map((column) => (
@@ -105,6 +135,7 @@ export default function TasksList() {
                 tasks={tasks}
               />
             )}
+            {activeTask && <TaskItem task={activeTask} />}
           </DragOverlay>,
           document.body
         )}
