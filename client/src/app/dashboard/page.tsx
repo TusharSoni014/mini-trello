@@ -3,18 +3,22 @@
 import SideBar from "@/components/Dashboard/SideBar";
 import TaskManager from "@/components/Dashboard/TaskManager";
 import { useAuth } from "@/hooks/useAuth";
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { fetchMyTasksThunk } from "@/lib/slices/task.slice";
 import React, { useEffect } from "react";
-import { BiLoaderAlt } from "react-icons/bi";
 
 export default function Page() {
   const { loading, handleLogout } = useAuth();
   const { currentUser } = useAppSelector((state) => state.appSlice);
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (!loading && !currentUser) {
       handleLogout();
+      return;
     }
-  }, [currentUser, loading, handleLogout]);
+    dispatch(fetchMyTasksThunk());
+  }, [currentUser, loading, handleLogout, dispatch]);
 
   if (loading)
     return (

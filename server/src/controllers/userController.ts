@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User";
 import { AuthRequest } from "../middlewares/verifyToken";
+import { Task } from "../models/Tasks";
 
 /**
  * Registers a new user with the provided username, email, and password.
@@ -31,6 +32,17 @@ export const signup = async (req: Request, res: Response) => {
       password: hashedPassword,
       username: username,
     });
+
+    const categories = ["todo", "under-review", "in-progress", "done"];
+
+    for (const category of categories) {
+      await Task.create({
+        title: `Sample ${category} task`,
+        description: `This is a sample ${category} task.`,
+        status: category,
+        user: user._id,
+      });
+    }
 
     return res.status(201).send({
       username: user.username,

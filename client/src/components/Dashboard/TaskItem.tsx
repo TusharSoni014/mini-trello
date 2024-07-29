@@ -30,9 +30,9 @@ export default function TaskItem({ task }: { task: ITask }) {
         {...attributes}
         {...listeners}
         style={style}
-        className="w-full border border-red-500 bg-white p-2 text-white"
+        className="w-full border-2 p-3 rounded-md bg-[#F9F9F9] opacity-30"
       >
-        .
+        {task.content}
       </div>
     );
   return (
@@ -41,7 +41,7 @@ export default function TaskItem({ task }: { task: ITask }) {
       {...attributes}
       {...listeners}
       style={style}
-      className="w-full border border-red-500 bg-slate-300 p-2"
+      className="w-full border-2 p-3 rounded-md bg-[#F9F9F9]"
     >
       {task.content}
     </div>

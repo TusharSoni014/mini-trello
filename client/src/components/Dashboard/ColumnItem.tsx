@@ -55,7 +55,7 @@ export default function ColumnItem({
         {column.title}
         <IoMdList />
       </div>
-      <div className="border-red-500 overflow-scroll">
+      <div className="border-red-500 overflow-scroll flex flex-col gap-3">
         <SortableContext items={tasksIds}>
           {tasks.map((task, index) => (
             <TaskItem key={index} task={task} />

@@ -1,4 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
+axios.defaults.withCredentials = true;
 
 export interface ITaskSlice {
   createForm: {
@@ -8,7 +10,20 @@ export interface ITaskSlice {
     description?: string;
     priority?: "low" | "medium" | "urgent" | "";
   };
+  myTasks: {
+    todo: Array<ITaskSlice["createForm"]>;
+    "in-progress": Array<ITaskSlice["createForm"]>;
+    "under-review": Array<ITaskSlice["createForm"]>;
+    done: Array<ITaskSlice["createForm"]>;
+  };
 }
+
+export const fetchMyTasksThunk = createAsyncThunk("fetch/myTasks", async () => {
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/task/all`
+  );
+  console.log("All Tasks", response.data);
+});
 
 const initialState: ITaskSlice = {
   createForm: {
@@ -17,6 +32,12 @@ const initialState: ITaskSlice = {
     deadline: undefined,
     description: "",
     priority: "",
+  },
+  myTasks: {
+    "in-progress": [],
+    "under-review": [],
+    done: [],
+    todo: [],
   },
 };
 
