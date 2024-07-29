@@ -14,6 +14,7 @@ export interface ITaskSlice {
     description?: string;
     priority?: "low" | "medium" | "urgent" | "";
   };
+  editId: string | null;
   myTasks: {
     todo: Array<ITaskSlice["createForm"]>;
     "in-progress": Array<ITaskSlice["createForm"]>;
@@ -67,6 +68,7 @@ const initialState: ITaskSlice = {
     done: [],
     todo: [],
   },
+  editId: null,
   tasksLoading: false,
 };
 
@@ -97,6 +99,9 @@ const taskSlice = createSlice({
       action: PayloadAction<ITaskSlice["createForm"]["priority"]>
     ) => {
       state.createForm.priority = action.payload;
+    },
+    updateEditId: (state, action: PayloadAction<ITaskSlice["editId"]>) => {
+      state.editId = action.payload;
     },
     updateDeadline: (
       state,
@@ -137,16 +142,6 @@ const taskSlice = createSlice({
     builder.addCase(fetchMyTasksThunk.pending, (state) => {
       state.tasksLoading = true;
     });
-    // builder.addCase(fetchMyTasksThunk.fulfilled, (state, action) => {
-    //   const tasks = action.payload;
-    //   state.myTasks = {
-    //     todo: tasks.filter((task) => task.status === "todo"),
-    //     "in-progress": tasks.filter((task) => task.status === "in-progress"),
-    //     "under-review": tasks.filter((task) => task.status === "under-review"),
-    //     done: tasks.filter((task) => task.status === "done"),
-    //   };
-    //   state.tasksLoading = false;
-    // });
     builder.addCase(fetchMyTasksThunk.fulfilled, (state, action) => {
       const tasks = action.payload.sort((a, b) => {
         const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
@@ -174,6 +169,7 @@ export const {
   updateDescription,
   updatePriority,
   updateTitle,
+  updateEditId,
   updateTaskPosition,
 } = taskSlice.actions;
 export default taskSlice.reducer;

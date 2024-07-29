@@ -46,6 +46,7 @@ import {
   ITaskSlice,
   updateDeadline,
   updateDescription,
+  updateEditId,
   updatePriority,
   updateStatus,
   updateTitle,
@@ -74,6 +75,7 @@ export default function SideBar({
   const { status, priority, title, deadline, description } = useAppSelector(
     (state) => state.taskSlice.createForm
   );
+  const { editId } = useAppSelector((state) => state.taskSlice);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -112,9 +114,37 @@ export default function SideBar({
       }
     };
 
+    const handleEditNote = async () => {
+      const taskData: ITaskSlice["createForm"] = {
+        title: title,
+        status: status,
+      };
+      if (deadline) taskData.deadline = deadline;
+      if (description) taskData.description = description;
+      if (priority) taskData.priority = priority;
+
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/task/edit/${editId}`,
+        taskData
+      );
+      await dispatch(fetchMyTasksThunk());
+      dispatch(updateTitle(""));
+      dispatch(updateDeadline(""));
+      dispatch(updateDescription(""));
+      dispatch(updatePriority(""));
+      dispatch(updateStatus(""));
+      dispatch(updateEditId(null));
+      toast("Task edited successfully!");
+      dispatch(updateCreateTaskDrawerVisibility(false));
+    };
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && createTaskDrawerVisiblity) {
-        handleCreateNote();
+        if (editId) {
+          handleEditNote();
+        } else {
+          handleCreateNote();
+        }
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -129,6 +159,7 @@ export default function SideBar({
     deadline,
     description,
     priority,
+    editId,
   ]);
 
   const menuItems: Array<{

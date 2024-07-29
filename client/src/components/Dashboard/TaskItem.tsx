@@ -1,13 +1,24 @@
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ITaskSlice } from "@/lib/slices/task.slice";
+import {
+  ITaskSlice,
+  updateDeadline,
+  updateDescription,
+  updateEditId,
+  updatePriority,
+  updateStatus,
+  updateTitle,
+} from "@/lib/slices/task.slice";
 import { MdOutlineAccessTime } from "react-icons/md";
 import { formatDistanceToNow } from "date-fns";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useAppDispatch } from "@/lib/hooks";
+import { updateCreateTaskDrawerVisibility } from "@/lib/slices/app.slice";
 
 export default function TaskItem({ task }: { task: ITaskSlice["createForm"] }) {
+  const dispatch = useAppDispatch();
   const timeAgo = task.createdAt
     ? formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })
     : "";
@@ -30,12 +41,22 @@ export default function TaskItem({ task }: { task: ITaskSlice["createForm"] }) {
     transform: CSS.Transform.toString(transform),
   };
 
+  const handleEditTask = () => {
+    dispatch(updateEditId(task._id || ""));
+    dispatch(updateTitle(task.title));
+    dispatch(updateDescription(task.description));
+    dispatch(updateDeadline(task.deadline));
+    dispatch(updatePriority(task.priority));
+    dispatch(updateStatus(task.status));
+    dispatch(updateCreateTaskDrawerVisibility(true));
+  };
+
   if (isDragging)
     return (
       <div
         ref={setNodeRef}
         style={style}
-        className="w-full border-2 p-3 rounded-md bg-[#F9F9F9] flex gap-2.5 flex-col opacity-25"
+        className="w-full border-4 border-dotted p-3 rounded-md bg-[#F9F9F9] flex gap-2.5 flex-col opacity-25"
       >
         <div className=" flex flex-col gap-0">
           <p
@@ -75,6 +96,7 @@ export default function TaskItem({ task }: { task: ITaskSlice["createForm"] }) {
         <div className="text-xs font-semibold text-black/60">{timeAgo}</div>
       </div>
     );
+
   return (
     <div
       ref={setNodeRef}
@@ -121,7 +143,7 @@ export default function TaskItem({ task }: { task: ITaskSlice["createForm"] }) {
         <div className="flex gap-1.5">
           <MdOutlineEdit
             className="cursor-pointer transition-colors hover:text-green-500"
-            onClick={() => console.log(task)}
+            onClick={handleEditTask}
           />
           <FaRegTrashAlt
             className="cursor-pointer transition-colors hover:text-red-500"
