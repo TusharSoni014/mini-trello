@@ -52,7 +52,7 @@ export default function ColumnItem({
       style={style}
       className=" w-full h-full overflow-auto bg-white p-3 border flex flex-col"
     >
-      <div {...attributes} {...listeners} className="border text-black/40">
+      <div className="border text-black/40">
         {column.title}
       </div>
       <div className="flex-grow border border-red-500 overflow-scroll">
