@@ -2,6 +2,7 @@ import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
+  fetchMyTasksThunk,
   ITaskSlice,
   updateDeadline,
   updateDescription,
@@ -16,6 +17,8 @@ import { MdOutlineEdit } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { useAppDispatch } from "@/lib/hooks";
 import { updateCreateTaskDrawerVisibility } from "@/lib/slices/app.slice";
+import axios from "axios";
+axios.defaults.withCredentials = true;
 
 export default function TaskItem({ task }: { task: ITaskSlice["createForm"] }) {
   const dispatch = useAppDispatch();
@@ -49,6 +52,13 @@ export default function TaskItem({ task }: { task: ITaskSlice["createForm"] }) {
     dispatch(updatePriority(task.priority));
     dispatch(updateStatus(task.status));
     dispatch(updateCreateTaskDrawerVisibility(true));
+  };
+
+  const handleDeleteTask = async () => {
+    await axios.delete(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/task/delete/${task._id}`
+    );
+    dispatch(fetchMyTasksThunk());
   };
 
   if (isDragging)
@@ -147,7 +157,7 @@ export default function TaskItem({ task }: { task: ITaskSlice["createForm"] }) {
           />
           <FaRegTrashAlt
             className="cursor-pointer transition-colors hover:text-red-500"
-            onClick={() => console.log(task)}
+            onClick={handleDeleteTask}
           />
         </div>
       </div>

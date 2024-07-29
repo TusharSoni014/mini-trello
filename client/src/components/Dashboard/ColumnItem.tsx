@@ -8,6 +8,7 @@ import TaskItem from "./TaskItem";
 import { IoMdList } from "react-icons/io";
 import { ITaskSlice, updateStatus } from "@/lib/slices/task.slice";
 import { updateCreateTaskDrawerVisibility } from "@/lib/slices/app.slice";
+import { GoPlus } from "react-icons/go";
 
 export default function ColumnItem({
   column,
@@ -68,9 +69,9 @@ export default function ColumnItem({
             );
             dispatch(updateCreateTaskDrawerVisibility(true));
           }}
-          className="w-full bg-gradient-to-t from-[#202020] to-[#3A3A3A]"
+          className="w-full bg-gradient-to-t from-[#202020] to-[#3A3A3A] flex justify-between items-center px-2.5"
         >
-          + Add Task
+          Add Task <GoPlus size={20}/>
         </Button>
       </div>
     </div>
