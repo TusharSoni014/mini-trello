@@ -6,6 +6,7 @@ axios.defaults.withCredentials = true;
 export interface ITaskSlice {
   createForm: {
     _id?: string;
+    updatedAt?: Date;
     title: string;
     status: "todo" | "under-review" | "in-progress" | "done" | "";
     deadline?: string | undefined;
@@ -31,23 +32,23 @@ export const fetchMyTasksThunk = createAsyncThunk<
 });
 
 export const updateTaskPositionThunk = createAsyncThunk(
-  "task/updatePosition",
+  "task/edit",
   async (
     { taskId, newColumnId }: { taskId: string; newColumnId: string },
     { dispatch }
   ) => {
-    // try {
-    //   await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/task/updatePosition`, {
-    //     taskId,
-    //     newColumnId,
-    //     newIndex
-    //   });
-    //   // Optionally refetch tasks to ensure sync with backend
-    //   dispatch(fetchMyTasksThunk());
-    // } catch (error) {
-    //   toast('Error updating task position');
-    //   throw error;
-    // }
+    try {
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/task/edit/${taskId}`,
+        {
+          status: newColumnId,
+        }
+      );
+      dispatch(fetchMyTasksThunk());
+    } catch (error) {
+      toast("Error updating task position");
+      throw error;
+    }
     console.log(taskId, newColumnId);
   }
 );
@@ -136,8 +137,22 @@ const taskSlice = createSlice({
     builder.addCase(fetchMyTasksThunk.pending, (state) => {
       state.tasksLoading = true;
     });
+    // builder.addCase(fetchMyTasksThunk.fulfilled, (state, action) => {
+    //   const tasks = action.payload;
+    //   state.myTasks = {
+    //     todo: tasks.filter((task) => task.status === "todo"),
+    //     "in-progress": tasks.filter((task) => task.status === "in-progress"),
+    //     "under-review": tasks.filter((task) => task.status === "under-review"),
+    //     done: tasks.filter((task) => task.status === "done"),
+    //   };
+    //   state.tasksLoading = false;
+    // });
     builder.addCase(fetchMyTasksThunk.fulfilled, (state, action) => {
-      const tasks = action.payload;
+      const tasks = action.payload.sort((a, b) => {
+        const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+        const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+        return dateB - dateA;
+      });
       state.myTasks = {
         todo: tasks.filter((task) => task.status === "todo"),
         "in-progress": tasks.filter((task) => task.status === "in-progress"),
