@@ -10,7 +10,7 @@ import {
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskItem from "./TaskItem";
-
+import { ITaskSlice } from "@/lib/slices/task.slice";
 
 export interface IColumn {
   id: string;
@@ -43,8 +43,9 @@ export default function TasksList() {
     },
   ]);
   const [tasks, setTasks] = useState<Array<ITask>>([]);
-  const [activeTask, setActiveTask] = useState<ITask | null>(null);
-  const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
+  const [activeTask, setActiveTask] = useState<ITaskSlice["createForm"] | null>(
+    null
+  );
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
   const onDragStart = (event: DragStartEvent) => {
@@ -55,17 +56,7 @@ export default function TasksList() {
     }
   };
 
-  const createTask = (columnId: string) => {
-    const newTask = {
-      id: Math.random().toFixed(2).toString(),
-      columnId: columnId,
-      content: `lorem ipsum ${Math.random().toFixed(2).toString()}`,
-    };
-    setTasks([...tasks, newTask]);
-  };
-
   const onDragEnd = (event: DragEndEvent) => {
-    setActiveColumn(null);
     setActiveTask(null);
     const { active, over } = event;
     if (!over) return;
@@ -131,7 +122,6 @@ export default function TasksList() {
           <SortableContext items={columnsId}>
             {columns.map((column) => (
               <ColumnItem
-                createTask={createTask}
                 key={column.id}
                 column={column}
                 tasks={tasks.filter((task) => task.columnId === column.id)}
@@ -141,13 +131,6 @@ export default function TasksList() {
         </div>
         {createPortal(
           <DragOverlay>
-            {activeColumn && (
-              <ColumnItem
-                createTask={createTask}
-                column={activeColumn}
-                tasks={tasks}
-              />
-            )}
             {activeTask && <TaskItem task={activeTask} />}
           </DragOverlay>,
           document.body

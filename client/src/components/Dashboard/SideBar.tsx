@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "../ui/input";
 import {
+  fetchMyTasksThunk,
   ITaskSlice,
   updateDeadline,
   updateDescription,
@@ -97,6 +98,12 @@ export default function SideBar({
           taskData
         );
         dispatch(updateCreateTaskDrawerVisibility(false));
+        dispatch(fetchMyTasksThunk());
+        dispatch(updateTitle(""));
+        dispatch(updateDeadline(""));
+        dispatch(updateDescription(""));
+        dispatch(updatePriority(""));
+        dispatch(updateStatus(""));
         toast("Task created successfully!");
       } catch (error) {
         showErrorToast(error);

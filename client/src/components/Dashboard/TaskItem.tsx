@@ -1,9 +1,9 @@
-import React from "react";
-import { ITask } from "./TasksList";
+import React, { useEffect } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { ITaskSlice } from "@/lib/slices/task.slice";
 
-export default function TaskItem({ task }: { task: ITask }) {
+export default function TaskItem({ task }: { task: ITaskSlice["createForm"] }) {
   const {
     setNodeRef,
     attributes,
@@ -12,7 +12,7 @@ export default function TaskItem({ task }: { task: ITask }) {
     transition,
     isDragging,
   } = useSortable({
-    id: task.id,
+    id: task._id || "",
     data: {
       type: "task",
       task,
@@ -32,7 +32,7 @@ export default function TaskItem({ task }: { task: ITask }) {
         style={style}
         className="w-full border-2 p-3 rounded-md bg-[#F9F9F9] opacity-30"
       >
-        {task.content}
+        {task.title}
       </div>
     );
   return (
@@ -43,7 +43,7 @@ export default function TaskItem({ task }: { task: ITask }) {
       style={style}
       className="w-full border-2 p-3 rounded-md bg-[#F9F9F9]"
     >
-      {task.content}
+      {task.title}
     </div>
   );
 }

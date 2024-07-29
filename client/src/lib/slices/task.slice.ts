@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { toast } from "sonner";
 axios.defaults.withCredentials = true;
 
 export interface ITaskSlice {
   createForm: {
+    _id?: string;
     title: string;
     status: "todo" | "under-review" | "in-progress" | "done" | "";
     deadline?: string | undefined;
@@ -16,13 +18,16 @@ export interface ITaskSlice {
     "under-review": Array<ITaskSlice["createForm"]>;
     done: Array<ITaskSlice["createForm"]>;
   };
+  tasksLoading: boolean;
 }
 
-export const fetchMyTasksThunk = createAsyncThunk("fetch/myTasks", async () => {
+export const fetchMyTasksThunk = createAsyncThunk<
+  Array<ITaskSlice["createForm"]>
+>("fetch/myTasks", async () => {
   const response = await axios.get(
     `${process.env.NEXT_PUBLIC_SERVER_URL}/task/all`
   );
-  console.log("All Tasks", response.data);
+  return response.data;
 });
 
 const initialState: ITaskSlice = {
@@ -39,6 +44,7 @@ const initialState: ITaskSlice = {
     done: [],
     todo: [],
   },
+  tasksLoading: false,
 };
 
 const taskSlice = createSlice({
@@ -75,6 +81,25 @@ const taskSlice = createSlice({
     ) => {
       state.createForm.deadline = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchMyTasksThunk.pending, (state) => {
+      state.tasksLoading = true;
+    });
+    builder.addCase(fetchMyTasksThunk.fulfilled, (state, action) => {
+      const tasks = action.payload;
+      state.myTasks = {
+        todo: tasks.filter((task) => task.status === "todo"),
+        "in-progress": tasks.filter((task) => task.status === "in-progress"),
+        "under-review": tasks.filter((task) => task.status === "under-review"),
+        done: tasks.filter((task) => task.status === "done"),
+      };
+      state.tasksLoading = false;
+    });
+    builder.addCase(fetchMyTasksThunk.rejected, (state) => {
+      state.tasksLoading = false;
+      toast("Some error occured while loading tasks!");
+    });
   },
 });
 

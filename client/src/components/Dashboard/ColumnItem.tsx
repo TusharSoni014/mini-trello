@@ -1,29 +1,25 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { IColumn, ITask } from "./TasksList";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "../ui/button";
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import TaskItem from "./TaskItem";
 import { IoMdList } from "react-icons/io";
+import { ITaskSlice, updateStatus } from "@/lib/slices/task.slice";
+import { updateCreateTaskDrawerVisibility } from "@/lib/slices/app.slice";
 
 export default function ColumnItem({
   column,
-  createTask,
   tasks,
 }: {
   column: IColumn;
-  createTask: (columnId: string) => void;
   tasks: Array<ITask>;
 }) {
+  const tasksRedux = useAppSelector((state) => state.taskSlice.myTasks);
   const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
   const dispatch = useAppDispatch();
-  const {
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { setNodeRef, transform, transition, isDragging } = useSortable({
     id: column.id,
     data: {
       type: "column",
@@ -57,20 +53,21 @@ export default function ColumnItem({
       </div>
       <div className="border-red-500 overflow-scroll flex flex-col gap-3">
         <SortableContext items={tasksIds}>
-          {tasks.map((task, index) => (
-            <TaskItem key={index} task={task} />
-          ))}
+          {tasksRedux[column.id as keyof typeof tasksRedux].map(
+            (task, index) => (
+              <TaskItem key={index} task={task} />
+            )
+          )}
         </SortableContext>
       </div>
       <div className="">
         <Button
-          // onClick={() => {
-          //   dispatch(
-          //     updateStatus(column.id as ITaskSlice["createForm"]["status"])
-          //   );
-          //   dispatch(updateCreateTaskDrawerVisibility(true));
-          // }}
-          onClick={() => createTask(column.id)}
+          onClick={() => {
+            dispatch(
+              updateStatus(column.id as ITaskSlice["createForm"]["status"])
+            );
+            dispatch(updateCreateTaskDrawerVisibility(true));
+          }}
           className="w-full bg-gradient-to-t from-[#202020] to-[#3A3A3A]"
         >
           + Add Task
