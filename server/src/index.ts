@@ -1,6 +1,6 @@
 /**
  * Main server file for the application.
- * 
+ *
  * This file sets up the Express server, configures middleware,
  * connects to the database, and defines the main routes.
  */
@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: process.env.CLIENT_URL!,
+    origin: ["http://localhost:3000", process.env.CLIENT_URL!],
   })
 );
 
