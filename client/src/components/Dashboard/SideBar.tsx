@@ -96,7 +96,7 @@ export default function SideBar({
       setCreateLoading(true);
 
       try {
-        axios.post(
+        await axios.post(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/task/create`,
           taskData
         );
